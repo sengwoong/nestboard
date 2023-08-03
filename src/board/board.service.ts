@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { Board, BoardStatus } from './board.model';
 import {v1 as uuid}from 'uuid'
 import { CreateBoardDto } from './dto/create-board.dto';
@@ -31,10 +31,15 @@ export class BoardService {
 
 
 getBoardById(id: string): Board {
-    return this.boards.find((board) => board.id === id); // 수정: 올바른 문법으로 find를 사용해야 합니다.
+    const board = this.boards.find((board) => board.id === id); // 수정: 올바른 문법으로 find를 사용해야 합니다.
+    if(!board){
+    throw new  NotFoundException(`can't fine ${id}`);
+    }
+    return  board
 }
 delectBoardById(id: string):void  {
-     this.boards.find((board) => board.id !== id); // 수정: 올바른 문법으로 find를 사용해야 합니다.
+    const found = this.getBoardById(id)
+     this.boards.find((board) => board.id !== found.id); // 수정: 올바른 문법으로 find를 사용해야 합니다.
 }
 
 updateBoardStatus(id:string ,status:BoardStatus):Board{
